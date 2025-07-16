@@ -1,0 +1,8 @@
+keys:
+  - &users
+    - &rick "age1wv0htdze6sup48nlfl82x9w0n2x28jxqnmn2nsajsa6g0w3hvdlqx6yz9s"
+creation_rules:
+  - path_regex: .*/secrets\.ya?ml$
+    key_groups:
+    - age:
+        - *rick

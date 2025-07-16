@@ -1,0 +1,4 @@
+.sops/
+.aider*
+!/.aider.conf.yml
+/nvim/luarocks*
