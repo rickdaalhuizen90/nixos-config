@@ -24,9 +24,9 @@
     xserver = {
       enable = true;
       xkb.layout = "us";
+      desktopManager.gnome.enable = true;
+      displayManager.gdm.enable = true;
     };
-    displayManager.gdm.enable = true;
-    desktopManager.gnome.enable = true;
     printing.enable = true;
 
     # Power management - TLP configuration
@@ -121,7 +121,7 @@
   # System packages
   environment = {
     systemPackages = with pkgs; [
-      coreutils wget curl git gnupg age
+      coreutils wget curl git gnupg age gcc
       htop tree zip docker-buildx qemu gnumake
     ];
     gnome.excludePackages = with pkgs; [ gedit totem geary ];

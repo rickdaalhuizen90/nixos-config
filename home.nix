@@ -14,7 +14,6 @@
     ./modules/alacritty.nix
     ./modules/zsh.nix
     ./modules/tmux.nix
-    ./modules/vim.nix
     ./modules/git.nix
     ./modules/htop.nix
     ./modules/nvim.nix
@@ -47,10 +46,8 @@
     nerd-fonts.hack
     lua-language-server
     nodePackages.typescript-language-server
-    nodePackages.typescript
     vscode-langservers-extracted
     ollama
-    vim
     direnv
     jadx
     frida-tools

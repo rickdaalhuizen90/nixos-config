@@ -6,7 +6,7 @@ let
     weak-model: ollama/qwen2.5-coder:1.5b
     attribute-commit-message-author: true
     dark-mode: true
-    editor: vim
+    editor: nano
     show-diffs: true
     stream: true
     cache-prompts: true
