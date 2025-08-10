@@ -3,16 +3,22 @@ vim.g.have_nerd_font = true
 
 vim.opt.number = true
 vim.opt.relativenumber = true
+vim.opt.numberwidth = 4
+vim.opt.signcolumn = "yes"
 vim.opt.tabstop = 2
 vim.opt.swapfile = false
 vim.opt.wrap = false
 vim.opt.winborder = 'none'
 vim.opt.clipboard = 'unnamedplus'
 vim.opt.showcmd = false
+vim.opt.termguicolors = true;
 
 vim.keymap.set('n', '<leader>w', ':write<CR>:source %<CR>', { desc = "Save and source current file" })
 vim.keymap.set('n', '<leader><Del>', ':bdelete<CR>', { desc = "Close current buffer" })
 vim.keymap.set('n', '<leader>o', '<CMD>Oil<CR>', { desc = 'Open Oil file explorer' })
+vim.keymap.set('n', '<leader>t', function()
+    vim.o.background = vim.o.background == 'dark' and 'light' or 'dark'
+end)
 
 vim.api.nvim_create_autocmd('TextYankPost', {
     callback = function()
@@ -45,6 +51,7 @@ vim.pack.add({
     { src = 'https://github.com/junegunn/goyo.vim' },
     { src = 'https://github.com/echasnovski/mini.statusline' },
     { src = 'https://github.com/nvim-tree/nvim-web-devicons', },
+    { src = 'https://github.com/maxmx03/solarized.nvim', },
 })
 
 require "nvim-treesitter".setup()
@@ -154,7 +161,7 @@ cmp.setup {
     },
 }
 
-require('conform').setup({
+require('conform').setup {
     notify_on_error = false,
     format_on_save = function(bufnr)
         local disable_filetypes = { c = true, cpp = true }
@@ -166,7 +173,7 @@ require('conform').setup({
     formatters_by_ft = {
         lua = { 'stylua' },
     },
-})
+}
 
 vim.keymap.set({ 'n', 'v' }, '<leader>fm', function()
     require('conform').format({ async = true, lsp_fallback = true })
@@ -180,3 +187,6 @@ require('mini.statusline').setup {
     use_icons = vim.g.have_nerd_font,
     set_vim_settings = true,
 }
+
+require('solarized').setup()
+vim.cmd("colorscheme solarized")
