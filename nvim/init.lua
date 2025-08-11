@@ -12,6 +12,7 @@ vim.opt.winborder = 'none'
 vim.opt.clipboard = 'unnamedplus'
 vim.opt.showcmd = false
 vim.opt.termguicolors = true;
+vim.opt.background = 'light';
 
 vim.keymap.set('n', '<leader>w', ':write<CR>:source %<CR>', { desc = "Save and source current file" })
 vim.keymap.set('n', '<leader><Del>', ':bdelete<CR>', { desc = "Close current buffer" })
@@ -51,7 +52,7 @@ vim.pack.add({
     { src = 'https://github.com/junegunn/goyo.vim' },
     { src = 'https://github.com/echasnovski/mini.statusline' },
     { src = 'https://github.com/nvim-tree/nvim-web-devicons', },
-    { src = 'https://github.com/maxmx03/solarized.nvim', },
+    --{ src = 'https://github.com/maxmx03/solarized.nvim', },
 })
 
 require "nvim-treesitter".setup()
@@ -188,5 +189,5 @@ require('mini.statusline').setup {
     set_vim_settings = true,
 }
 
-require('solarized').setup()
-vim.cmd("colorscheme solarized")
+--require('solarized').setup()
+--vim.cmd("colorscheme solarized")

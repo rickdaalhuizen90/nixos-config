@@ -17,6 +17,7 @@
     ./modules/git.nix
     ./modules/htop.nix
     ./modules/nvim.nix
+    ./modules/emacs.nix
     #./modules/aider.nix
   ];
 
