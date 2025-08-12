@@ -116,13 +116,21 @@
     zsh.enable = true;
     java.package = pkgs.jdk21;
     fuse.userAllowOther = true;
+    steam = {
+      enable = true;
+      remotePlay.openFirewall = true;
+      dedicatedServer.openFirewall = true;
+      extraCompatPackages = with pkgs; [
+        proton-ge-bin
+      ];
+    };
   };
 
   # System packages
   environment = {
     systemPackages = with pkgs; [
       coreutils wget curl git gnupg age gcc
-      htop tree zip docker-buildx qemu gnumake
+      htop tree zip docker-buildx qemu gnumake protonup
     ];
     gnome.excludePackages = with pkgs; [ gedit totem geary ];
   };

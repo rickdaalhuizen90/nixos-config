@@ -6,6 +6,7 @@ vim.opt.relativenumber = true
 vim.opt.numberwidth = 4
 vim.opt.signcolumn = "yes"
 vim.opt.tabstop = 2
+vim.opt.smartindent = true
 vim.opt.swapfile = false
 vim.opt.wrap = false
 vim.opt.winborder = 'none'
@@ -122,6 +123,11 @@ fzf.setup {
         previewer = false,
         fd_opts = "--color=never --type f --hidden --follow --exclude .git",
     },
+    winopts = {
+        fullscreen = true,
+        backdrop = 60,
+        border = 'none',
+    }
 }
 
 vim.keymap.set('n', '<C-p>', fzf.files, { desc = 'Find Files' })

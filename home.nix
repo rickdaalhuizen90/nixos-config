@@ -17,7 +17,7 @@
     ./modules/git.nix
     ./modules/htop.nix
     ./modules/nvim.nix
-    ./modules/emacs.nix
+    #./modules/emacs.nix
     #./modules/aider.nix
   ];
 
@@ -35,7 +35,6 @@
     gtimelog
     signal-desktop
     transmission_4-qt
-    steam
     zoxide
     dust
     ripgrep
@@ -80,6 +79,7 @@
     _JAVA_AWT_WM_NONREPARENTING = 1;
     FZF_DEFAULT_COMMAND = "rg --files --hidden --follow --no-ignore-vcs --glob \"!{node_modules/*,.git/*,vendor/*,dist/*,build/*}\"";
     NIXPKGS_ALLOW_UNFREE = 1;
+    WLR_NO_HARDWARE_CURSORS = "1";
   };
 
   home.sessionPath = [
