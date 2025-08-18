@@ -121,12 +121,23 @@ local fzf = require('fzf-lua')
 fzf.setup {
     files = {
         previewer = false,
-        fd_opts = "--color=never --type f --hidden --follow --exclude .git",
+        fd_opts = "--color=never --type f --hidden --follow --exclude .git --exclude node_modules --exclude vendor --exclude .cache --exclude build --exclude dist --threads=8",
+        rg_opts = "--color=never --files --hidden --follow --glob '!.git/*' --glob '!node_modules/*'",
+    },
+    grep = {
+        rg_opts = "--column --line-number --no-heading --color=always --smart-case --max-columns=4096 --threads=8",
+    },
+    live_grep = {
+        rg_opts = "--column --line-number --no-heading --color=always --smart-case --max-columns=512",
+        exec_empty_query = false,
     },
     winopts = {
         fullscreen = true,
         backdrop = 60,
         border = 'none',
+        preview = {
+            border = 'none'
+        }
     }
 }
 

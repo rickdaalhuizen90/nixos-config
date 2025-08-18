@@ -34,23 +34,13 @@
     tlp = {
       enable = true;
       settings = {
-        CPU_DRIVER_OPMODE_ON_AC = "passive";
-        CPU_DRIVER_OPMODE_ON_BAT = "passive";
-        CPU_SCALING_GOVERNOR_ON_AC = "ondemand";
-        CPU_SCALING_GOVERNOR_ON_BAT = "conservative";
+        CPU_DRIVER_OPMODE_ON_AC = "active";
+        CPU_SCALING_GOVERNOR_ON_AC = "schedutil";
         CPU_BOOST_ON_AC = 1;
         CPU_BOOST_ON_BAT = 0;
-        PLATFORM_PROFILE_ON_AC = "balanced";
-        PLATFORM_PROFILE_ON_BAT = "low-power";
-        RADEON_DPM_PERF_LEVEL_ON_AC = "high";
-        RADEON_DPM_PERF_LEVEL_ON_BAT = "low";
-        RADEON_DPM_STATE_ON_AC = "performance";
-        RADEON_DPM_STATE_ON_BAT = "battery";
         START_CHARGE_THRESH_BAT0 = 40;
         STOP_CHARGE_THRESH_BAT0 = 80;
-        USB_AUTOSUSPEND = 1;
-        PCIE_ASPM_ON_AC = "performance";
-        PCIE_ASPM_ON_BAT = "powersupersave";
+        RADEON_DPM_STATE_ON_AC = "balanced";
       };
     };
 
@@ -129,8 +119,8 @@
   # System packages
   environment = {
     systemPackages = with pkgs; [
-      coreutils wget curl git gnupg age gcc
-      htop tree zip docker-buildx qemu gnumake protonup
+      coreutils wget curl git gnupg age gcc htop tree zip
+      docker-buildx qemu gnumake protonup
     ];
     gnome.excludePackages = with pkgs; [ gedit totem geary ];
   };
