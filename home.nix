@@ -17,13 +17,13 @@
     ./modules/git.nix
     ./modules/htop.nix
     ./modules/nvim.nix
-    #./modules/emacs.nix
+    ./modules/emacs.nix
     #./modules/aider.nix
   ];
 
   home.packages = with pkgs; [
     google-chrome
-    android-studio
+    android-tools
     anki
     wireshark-qt
     obsidian
@@ -32,18 +32,18 @@
     libreoffice
     mitmproxy
     vlc
-    gtimelog
     signal-desktop
-    transmission_4-qt
+    #transmission_4-qt
+    qbittorrent
     zoxide
     dust
     ripgrep
     fzf
+    jq
     wl-clipboard
     pandoc
     gemini-cli
     valgrind
-    nerd-fonts.hack
     lua-language-server
     nodePackages.typescript-language-server
     vscode-langservers-extracted
@@ -52,20 +52,21 @@
     jadx
     frida-tools
     apktool
-    minikube
+    k3d
     kubectl
     kubernetes-helm
     k9s
     inotify-tools
     harper
     marksman
-    android-tools
     pipx
-    python313Packages.numpy
     yt-dlp
     spotdl
     logseq
     zotero
+    intelephense
+    fira-code
+    nerd-fonts.hack
   ];
 
   fonts.fontconfig.enable = true;

@@ -9,7 +9,7 @@
   networking = {
     hostName = "nixos";
     networkmanager.enable = true;
-    nameservers = [ "1.1.1.1" "1.0.0.1" ];
+    nameservers = [ "13.248.221.253" "1.1.1.1" "1.0.0.1" ];
   };
 
   # Localization
@@ -120,7 +120,7 @@
   environment = {
     systemPackages = with pkgs; [
       coreutils wget curl git gnupg age gcc htop tree zip
-      docker-buildx qemu gnumake protonup
+      docker-buildx qemu gnumake protonup openvpn
     ];
     gnome.excludePackages = with pkgs; [ gedit totem geary ];
   };
@@ -131,6 +131,12 @@
     description = "Rick Daalhuizen";
     extraGroups = [ "networkmanager" "wheel" "docker" ];
     shell = pkgs.zsh;
+  };
+
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 30d";
   };
 
   system.stateVersion = "25.05";

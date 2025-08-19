@@ -1,16 +1,19 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   programs.emacs = {
     enable = true;
-    package = pkgs.emacs;
+    package = pkgs.emacs-gtk;
+
     extraPackages = (epkgs: with epkgs; [
       vterm
       pdf-tools
-      treesit-grammars.with-all-grammars
+      (treesit-grammars.with-grammars (grammars: []))
     ]);
+
+    extraConfig = ''
+      ;; Load your init.el from the specified source
+      (load-file "${./emacs/init.el}")
+    '';
   };
-
-  xdg.configFile."emacs/init.el".source = ./emacs/init.el;
 }
-
