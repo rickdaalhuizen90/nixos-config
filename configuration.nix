@@ -119,7 +119,7 @@
   # System packages
   environment = {
     systemPackages = with pkgs; [
-      coreutils wget curl git gnupg age gcc htop tree zip
+      coreutils wget curl git gnupg age gcc htop tree zip unzip p7zip
       docker-buildx qemu gnumake protonup openvpn
     ];
     gnome.excludePackages = with pkgs; [ gedit totem geary ];

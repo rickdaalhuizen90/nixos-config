@@ -18,7 +18,7 @@
     ./modules/htop.nix
     ./modules/nvim.nix
     ./modules/emacs.nix
-    #./modules/aider.nix
+    ./modules/aider.nix
   ];
 
   home.packages = with pkgs; [
@@ -30,6 +30,7 @@
     ghidra-bin
     burpsuite
     libreoffice
+    pcsx2
     mitmproxy
     vlc
     signal-desktop
@@ -42,7 +43,8 @@
     jq
     wl-clipboard
     pandoc
-    gemini-cli
+    #gemini-cli
+    claude-code
     valgrind
     lua-language-server
     nodePackages.typescript-language-server
@@ -67,6 +69,7 @@
     intelephense
     fira-code
     nerd-fonts.hack
+    nerd-fonts.jetbrains-mono
   ];
 
   fonts.fontconfig.enable = true;

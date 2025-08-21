@@ -3,7 +3,6 @@
 {
   home.packages = with pkgs; [
     fd
-    unzip
     (python3.withPackages (ps: with ps; [ pynvim ]))
   ];
 
