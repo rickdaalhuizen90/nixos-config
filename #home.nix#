@@ -68,14 +68,6 @@
     logseq
     zotero
     intelephense
-    lua
-    lua-language-server
-    typescript
-    typescript-language-server
-    vscode-langservers-extracted
-    go
-    gopls
-    clang-tools
     fira-code
     nerd-fonts.hack
     nerd-fonts.jetbrains-mono
