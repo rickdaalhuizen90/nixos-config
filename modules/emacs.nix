@@ -8,17 +8,11 @@
     extraPackages = (epkgs: with epkgs; [
       vterm
       pdf-tools
+      evil
       evil-collection
       use-package
       magit
       forge
-      web-mode
-      scss-mode
-      typescript-mode
-      python-mode
-      php-mode
-      go-mode
-      lua-mode
       (treesit-grammars.with-grammars (grammars: []))
     ]);
   };
