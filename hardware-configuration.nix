@@ -26,6 +26,9 @@
     amdvlk.enable = true;
   };
 
+  hardware.bluetooth.enable = true;
+  services.blueman.enable = true;
+
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/fe90fec6-d4a9-42b0-9808-27541417e477";
       fsType = "ext4";

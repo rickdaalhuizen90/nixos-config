@@ -30,6 +30,7 @@
     ghidra-bin
     burpsuite
     libreoffice
+    calibre
     pcsx2
     mitmproxy
     vlc
@@ -37,6 +38,7 @@
     #transmission_4-qt
     qbittorrent
     zoxide
+    uv
     dust
     ripgrep
     fzf
@@ -44,7 +46,12 @@
     wl-clipboard
     pandoc
     #gemini-cli
-    claude-code
+    nodejs_24
+    #claude-code
+    codex
+    #llama-cpp
+    jetbrains.phpstorm
+    github-copilot-intellij-agent
     valgrind
     lua-language-server
     nodePackages.typescript-language-server
@@ -79,7 +86,17 @@
     fira-code
     nerd-fonts.hack
     nerd-fonts.jetbrains-mono
+    sops
   ];
+
+  sops.secrets.openai_key = {
+    sopsFile = ./secrets/secrets.yaml;
+    key      = "OPENAI_API_KEY";
+  };
+
+  programs.zsh.initContent = ''
+export OPENAI_API_KEY="$(<"${config.sops.secrets.openai_key.path}")"
+'';
 
   fonts.fontconfig.enable = true;
 
@@ -99,5 +116,7 @@
     "$HOME/.local/bin"
     "$HOME/bin"
   ];
+
+  sops.age.keyFile = "${config.home.homeDirectory}/.config/sops/age/keys.txt";
 }
 

@@ -36,6 +36,54 @@
 ;; Disable line numbers for text-focused modes
 (dolist (mode '(org-mode-hook term-mode-hook shell-mode-hook eshell-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
+
+;; Prefer vertical splits
+(setq split-width-threshold 0)
+(setq split-height-threshold nil)
+
+;; Disable all GUI dialogs - use minibuffer instead
+(setq use-dialog-box nil)
+(setq use-file-dialog nil)
+
+;; Syntax highlighting inside org src blocks
+(setq org-src-fontify-natively t
+      org-src-tab-acts-natively t
+      org-edit-src-content-indentation 0
+      org-src-preserve-indentation t)
+
+;; A simple Emacs minor mode
+(require 'olivetti)
+#+END_SRC
+
+* Theme
+
+#+BEGIN_SRC emacs-lisp
+(use-package modus-themes
+  :init
+  ;; Configure before loading
+  (setq modus-themes-mode-line '(accented borderless)
+        modus-themes-org-blocks 'tinted-background
+        modus-themes-bold-constructs t
+        modus-themes-italic-constructs t
+        modus-themes-mixed-fonts t
+        modus-themes-prompts '(bold intense)
+        modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi-tinted))
+  :config
+  ;; Load the light theme by default
+  (load-theme 'modus-operandi-tinted :no-confirm)
+
+  ;; Convenient theme toggle
+  (global-set-key (kbd "<f5>") #'modus-themes-toggle))
+#+END_SRC
+
+* Mode line
+
+#+BEGIN_SRC emacs-lisp
+(use-package mood-line
+  :config
+  (mood-line-mode)
+  :custom
+  (mood-line-glyph-alist mood-line-glyphs-fira-code))
 #+END_SRC
 
 * Font Configuration
@@ -178,7 +226,13 @@
         org-src-tab-acts-natively t          ; Tab works normally in src blocks
         org-confirm-babel-evaluate nil)      ; Don't ask before running code
 
-  ;; Quick access to files
+  ;; Enable execution of code blocks in Org Babel
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((python . t)
+     (lua    . t)))
+
+	;; Quick access to files
   (setq org-agenda-files '("~/Notes/"))
 
   ;; Better refile targets
@@ -195,3 +249,64 @@
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 #+END_SRC
 
+* Journal
+
+#+BEGIN_SRC emacs-lisp
+(use-package org-journal
+  :ensure t
+  :custom
+  (org-journal-dir "~/Notes/")
+  (org-journal-file-format "dailies/%m-%d-%Y.org")
+  (org-journal-file-type 'daily)
+  (org-journal-time-prefix "** ")
+  (org-journal-find-file 'find-file)
+  (org-journal-carryover-items "TODO=\"TODO\"|TODO=\"DOING\"")
+  (org-journal-enable-agenda-integration t))
+#+END_SRC
+
+* ORG Roam
+
+#+BEGIN_SRC emacs-lisp
+(use-package org-roam
+  :ensure t
+  :custom
+  (org-roam-directory (file-truename "~/Notes/"))
+  (org-roam-node-display-template "${formatted-tags:30} ${title:*}")
+  (org-roam-completion-everywhere t)
+  :bind (("C-c n l" . org-roam-buffer-toggle)
+         ("C-c n f" . org-roam-node-find)
+         ("C-c n g" . org-roam-graph)
+         ("C-c n i" . org-roam-node-insert)
+         ("C-c n c" . org-roam-capture)
+         ("C-c n j" . org-roam-dailies-capture-today)
+         :map org-mode-map
+         ("C-M-i" . completion-at-point))
+  :config
+  ;; Custom accessor to format tags with # prefix
+  (cl-defmethod org-roam-node-formatted-tags ((node org-roam-node))
+    "Format tags with # prefix for display"
+    (let ((tags (org-roam-node-tags node)))
+      (if tags
+          (mapconcat (lambda (tag) (concat "#" tag)) tags " ")
+        "")))
+
+  (org-roam-db-autosync-mode))
+#+END_SRC
+
+* Automatic save
+
+#+BEGIN_SRC emacs-lisp
+(use-package super-save
+  :ensure t
+  :config
+  (super-save-mode +1)
+  (setq super-save-auto-save-when-idle t)
+  (setq super-save-idle-duration 5))  ; Auto-save after 5 seconds idle
+#+END_SRC
+
+* Distraction-Free Writing Modes
+
+#+BEGIN_SRC emacs-lisp
+(use-package darkroom
+  :ensure t)
+#+END_SRC
