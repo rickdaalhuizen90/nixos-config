@@ -42,6 +42,7 @@
     dust
     ripgrep
     fzf
+    ffmpeg_6-headless
     jq
     wl-clipboard
     pandoc
@@ -84,8 +85,10 @@
     gopls
     clang-tools
     fira-code
+    cascadia-code
     nerd-fonts.hack
     nerd-fonts.jetbrains-mono
+    nerd-fonts.recursive-mono
     sops
   ];
 

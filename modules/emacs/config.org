@@ -51,6 +51,9 @@
       org-edit-src-content-indentation 0
       org-src-preserve-indentation t)
 
+;; Show just file names
+(setq find-ls-option '("-print" . ""))
+
 ;; A simple Emacs minor mode
 (require 'olivetti)
 #+END_SRC
