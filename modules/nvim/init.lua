@@ -9,11 +9,23 @@ vim.opt.tabstop = 2
 vim.opt.smartindent = true
 vim.opt.swapfile = false
 vim.opt.wrap = false
+vim.opt.linebreak = true
+vim.opt.breakindent = true
 vim.opt.winborder = 'none'
 vim.opt.clipboard = 'unnamedplus'
 vim.opt.showcmd = false
-vim.opt.termguicolors = true;
-vim.opt.background = 'light';
+vim.opt.termguicolors = true
+vim.opt.conceallevel = 1
+vim.opt.thesaurus:append("~/.config/nvim/thesaurus/mthesaur.txt")
+
+vim.api.nvim_set_keymap('i', '--', '—', { noremap = true })
+
+vim.cmd [[
+  highlight Normal guibg=none
+  highlight NonText guibg=none
+  highlight NormalFloat guibg=none
+  highlight SignColumn guibg=none
+]]
 
 vim.keymap.set('n', '<leader>w', ':write<CR>:source %<CR>', { desc = "Save and source current file" })
 vim.keymap.set('n', '<leader><Del>', ':bdelete<CR>', { desc = "Close current buffer" })
@@ -30,6 +42,7 @@ vim.api.nvim_create_autocmd('TextYankPost', {
     desc = 'Highlight text on yank',
 })
 
+-- you can keep this, but blink does completion itself; this won’t hurt
 vim.api.nvim_create_autocmd('LspAttach', {
     callback = function(ev)
         local client = vim.lsp.get_client_by_id(ev.data.client_id)
@@ -39,11 +52,12 @@ vim.api.nvim_create_autocmd('LspAttach', {
     end
 })
 
+-- PLUGINS ----------------------------------------------------------
 vim.pack.add({
     { src = 'https://github.com/neovim/nvim-lspconfig' },
-    { src = 'https://github.com/hrsh7th/nvim-cmp' },
-    { src = 'https://github.com/hrsh7th/cmp-nvim-lsp' },
     { src = 'https://github.com/L3MON4D3/LuaSnip' },
+    { src = 'https://github.com/saghen/blink.cmp' },
+    { src = 'https://github.com/archie-judd/blink-cmp-words' },
     { src = 'https://github.com/nvim-treesitter/nvim-treesitter' },
     { src = 'https://github.com/ibhagwan/fzf-lua' },
     { src = 'https://github.com/stevearc/oil.nvim' },
@@ -52,8 +66,14 @@ vim.pack.add({
     { src = 'https://github.com/stevearc/conform.nvim' },
     { src = 'https://github.com/junegunn/goyo.vim' },
     { src = 'https://github.com/echasnovski/mini.statusline' },
-    { src = 'https://github.com/nvim-tree/nvim-web-devicons', },
-    --{ src = 'https://github.com/maxmx03/solarized.nvim', },
+    { src = 'https://github.com/nvim-tree/nvim-web-devicons' },
+    { src = 'https://github.com/folke/zen-mode.nvim' },
+    { src = 'https://github.com/folke/twilight.nvim' },
+    { src = 'https://github.com/habamax/vim-asciidoctor' },
+    { src = 'https://github.com/nvim-lua/plenary.nvim' },
+    { src = 'https://github.com/epwalsh/obsidian.nvim' },
+    { src = 'https://github.com/joshuadanpeterson/typewriter.nvim' },
+    -- { src = 'https://github.com/maxmx03/solarized.nvim', },
 })
 
 require "nvim-treesitter".setup()
@@ -61,8 +81,48 @@ require "which-key".setup()
 require "mini.pick".setup()
 require "oil".setup()
 
+-- BLINK.CMP --------------------------------------------------------
+local blink = require("blink.cmp")
+
+blink.setup({
+    sources = {
+        default = { "lsp", "path", "buffer", "snippets" },
+        per_filetype = {
+            markdown = { "thesaurus" },
+            text = { "thesaurus" },
+            asciidoctor = { "thesaurus" },
+        },
+
+        providers = {
+            thesaurus = {
+                name = "blink-cmp-words",
+                module = "blink-cmp-words.thesaurus",
+                opts = {
+                    similarity_depth = 2,
+                    similarity_pointers = { "&", "^" },
+                    user_file = "~/.config/nvim/thesaurus/mthesaur.txt",
+                },
+                min_keyword_length = 5,
+            },
+        },
+    },
+
+    snippets = {
+        preset = "luasnip",
+    },
+
+    fuzzy = {
+        implementation = "lua",
+    }
+
+})
+
+-- LSP --------------------------------------------------------------
 local lspconfig = require('lspconfig')
-local capabilities = require('cmp_nvim_lsp').default_capabilities()
+
+-- blink has its own helper for LSP capabilities
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+capabilities = require("blink.cmp").get_lsp_capabilities(capabilities)
 
 local servers = {
     "lua_ls", "elixirls", "marksman", "harper_ls",
@@ -98,6 +158,7 @@ for _, server_name in ipairs(servers) do
     lspconfig[server_name].setup(opts)
 end
 
+-- intelephense extra
 lspconfig.intelephense.setup({
     on_attach = on_attach,
     capabilities = capabilities,
@@ -117,6 +178,7 @@ lspconfig.intelephense.setup({
     },
 })
 
+-- FZF --------------------------------------------------------------
 local fzf = require('fzf-lua')
 fzf.setup {
     files = {
@@ -147,38 +209,7 @@ vim.keymap.set('n', '<C-b>', fzf.buffers, { desc = 'Show Buffers' })
 vim.keymap.set('n', '<C-h>', fzf.command_history, { desc = 'Command History' })
 vim.keymap.set('n', '<C-q>', fzf.quickfix, { desc = 'Quick Fix List' })
 
-local cmp = require 'cmp'
-local luasnip = require 'luasnip'
-
-cmp.setup {
-    snippet = {
-        expand = function(args)
-            luasnip.lsp_expand(args.body)
-        end,
-    },
-    mapping = cmp.mapping.preset.insert({
-        ["<C-b>"] = cmp.mapping.scroll_docs(-4),
-        ["<C-f>"] = cmp.mapping.scroll_docs(4),
-        ["<C-Space>"] = cmp.mapping.complete(),
-        ["<C-e>"] = cmp.mapping.abort(),
-        ["<CR>"] = cmp.mapping.confirm({ select = true }),
-        ["<C-CR>"] = cmp.mapping.confirm({
-            select = true,
-            behavior = cmp.ConfirmBehavior.Replace
-        }),
-    }),
-    sources = {
-        { name = 'nvim_lsp' },
-        { name = 'luasnip' },
-        { name = 'path' },
-    },
-    confirmation = {
-        get_commit_characters = function(commit_characters)
-            return commit_characters
-        end
-    },
-}
-
+-- FORMATTER --------------------------------------------------------
 require('conform').setup {
     notify_on_error = false,
     format_on_save = function(bufnr)
@@ -197,6 +228,7 @@ vim.keymap.set({ 'n', 'v' }, '<leader>fm', function()
     require('conform').format({ async = true, lsp_fallback = true })
 end, { desc = 'Format buffer' })
 
+-- STATUSLINE -------------------------------------------------------
 require('mini.statusline').setup {
     content = {
         active = nil,
@@ -206,5 +238,117 @@ require('mini.statusline').setup {
     set_vim_settings = true,
 }
 
---require('solarized').setup()
---vim.cmd("colorscheme solarized")
+-- HARPER -----------------------------------------------------------
+require('lspconfig').harper_ls.setup {
+    filetypes = { "markdown", "text", "latex" },
+    settings = {
+        ["harper-ls"] = {
+            userDictPath = "",
+            workspaceDictPath = "",
+            fileDictPath = "",
+            linters = {
+                SpellCheck = true,
+                SpelledNumbers = false,
+                AnA = true,
+                SentenceCapitalization = true,
+                UnclosedQuotes = true,
+                WrongQuotes = false,
+                LongSentences = true,
+                RepeatedWords = true,
+                Spaces = true,
+                Matcher = true,
+                CorrectNumberSuffix = true
+            },
+            codeActions = {
+                ForceStable = false
+            },
+            markdown = {
+                IgnoreLinkTitle = false
+            },
+            diagnosticSeverity = "hint",
+            isolateEnglish = false,
+            dialect = "American",
+            maxFileLength = 120000,
+            ignoredLintsPath = "",
+            excludePatterns = {}
+        }
+    }
+}
+
+vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "Code action" })
+vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, { desc = "Show diagnostic" })
+
+-- ZEN / TWILIGHT / TYPEWRITER -------------------------------------
+require("zen-mode").setup({
+    window = {
+        backdrop = 0.95,
+        width = 80,
+        options = {
+            number = false,
+            relativenumber = false,
+            signcolumn = "no",
+            cursorline = false,
+        },
+    },
+    plugins = {
+        twilight = { enabled = true },
+        options = {
+            enabled = true,
+            ruler = false,
+            showcmd = false,
+            laststatus = 0,
+        },
+    },
+    alacritty = {
+        enabled = false,
+        font = "18",
+    },
+    on_open = function()
+        vim.cmd("TWEnable")
+        vim.opt.wrap = true
+    end,
+    on_close = function()
+        vim.cmd("TWDisable")
+        vim.opt.wrap = false
+    end,
+})
+
+require("twilight").setup({
+    context = 10,
+    dimming = {
+        alpha = 0.5,
+    },
+})
+
+require("typewriter").setup({
+    enable_with_zen_mode = false,
+    keep_cursor_position = true,
+    enable_notifications = true,
+    enable_horizontal_scroll = false,
+    start_enabled = false,
+    always_center = false,
+})
+
+-- OBSIDIAN ---------------------------------------------------------
+require("obsidian").setup({
+    workspaces = {
+        {
+            name = "Personal",
+            path = "~/Documents/Notes",
+        },
+    },
+    daily_notes = {
+        folder = "Fleeting",
+        date_format = "%Y-%m-%d",
+    },
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = { "markdown", "text" },
+    callback = function()
+        vim.o.scrolloff = math.floor(vim.api.nvim_win_get_height(0) / 2)
+    end,
+})
+
+vim.keymap.set("n", "<leader>z", "<cmd>ZenMode<CR>", { desc = "Zen mode" })
+vim.keymap.set("n", "<leader>tw", "<cmd>Twilight<CR>", { desc = "Toggle Twilight" })

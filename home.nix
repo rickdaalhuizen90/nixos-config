@@ -1,7 +1,7 @@
 { config, pkgs, lib, username, ... }:
 
 {
-  home.stateVersion = "24.05";
+  home.stateVersion = "25.05";
   home.username = username;
   home.homeDirectory = "/home/${username}";
 
@@ -22,9 +22,12 @@
   ];
 
   home.packages = with pkgs; [
+    rustc
+    cargo
     google-chrome
     android-tools
     anki
+    teams
     wireshark-qt
     obsidian
     ghidra-bin
@@ -38,6 +41,8 @@
     #transmission_4-qt
     qbittorrent
     zoxide
+    novelwriter
+    intelephense
     uv
     dust
     ripgrep
@@ -46,12 +51,9 @@
     jq
     wl-clipboard
     pandoc
-    #gemini-cli
+    asciidoctor
     nodejs_24
-    #claude-code
-    codex
     #llama-cpp
-    jetbrains.phpstorm
     github-copilot-intellij-agent
     valgrind
     lua-language-server
@@ -75,7 +77,6 @@
     spotdl
     logseq
     zotero
-    intelephense
     lua
     lua-language-server
     typescript
@@ -84,11 +85,10 @@
     go
     gopls
     clang-tools
-    fira-code
     cascadia-code
     nerd-fonts.hack
-    nerd-fonts.jetbrains-mono
-    nerd-fonts.recursive-mono
+    google-fonts
+    iosevka
     sops
   ];
 

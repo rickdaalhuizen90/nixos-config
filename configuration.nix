@@ -97,6 +97,7 @@
     allowUnfree = true;
     rocmSupport = true;
     android_sdk.accept_license = true;
+    allowUnsupportedSystem = true;
   };
 
   nix.settings.experimental-features = [ "nix-command" "flakes" "pipe-operators" ];

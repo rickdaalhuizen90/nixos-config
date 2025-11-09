@@ -10,6 +10,9 @@
       general = {
         live_config_reload = true;
       };
+      window = {
+        opacity = 0.95;
+      };
       scrolling = {
         history = 10000;
       };
@@ -21,7 +24,6 @@
           background = "0x002221";
           foreground = "0xe6f8f8";
         };
-
         normal = {
           black   = "0x002221";
           red     = "0xea3431";
@@ -32,7 +34,6 @@
           cyan    = "0x1ab2ad";
           white   = "0x99dddb";
         };
-
         bright = {
           black   = "0x006562";
           red     = "0xea3431";
