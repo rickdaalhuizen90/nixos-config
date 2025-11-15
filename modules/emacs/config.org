@@ -17,6 +17,19 @@
       auto-revert-check-vc-info nil)
 #+END_SRC
 
+* Package Management
+
+#+BEGIN_SRC emacs-lisp
+(require 'package)
+(setq package-archives '(("melpa" . "https://melpa.org/packages/")
+                         ("elpa"  . "https://elpa.gnu.org/packages/")))
+(package-initialize)
+
+;; We let Nix provide most packages, and only explicitly :ensure t for a few.
+(require 'use-package)
+(setq use-package-always-ensure nil)
+#+END_SRC
+
 * UI Configuration
 
 #+BEGIN_SRC emacs-lisp
@@ -31,11 +44,6 @@
 
 (set-fringe-mode 10)
 (column-number-mode)
-(global-display-line-numbers-mode t)
-
-;; Disable line numbers for text-focused modes
-(dolist (mode '(org-mode-hook term-mode-hook shell-mode-hook eshell-mode-hook))
-  (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 ;; Prefer vertical splits
 (setq split-width-threshold 0)
@@ -58,79 +66,48 @@
 (require 'olivetti)
 #+END_SRC
 
-* Theme
-
-#+BEGIN_SRC emacs-lisp
-(use-package modus-themes
-  :init
-  ;; Configure before loading
-  (setq modus-themes-mode-line '(accented borderless)
-        modus-themes-org-blocks 'tinted-background
-        modus-themes-bold-constructs t
-        modus-themes-italic-constructs t
-        modus-themes-mixed-fonts t
-        modus-themes-prompts '(bold intense)
-        modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi-tinted))
-  :config
-  ;; Load the light theme by default
-  (load-theme 'modus-operandi-tinted :no-confirm)
-
-  ;; Convenient theme toggle
-  (global-set-key (kbd "<f5>") #'modus-themes-toggle))
-#+END_SRC
-
 * Mode line
 
 #+BEGIN_SRC emacs-lisp
 (use-package mood-line
+  :ensure nil
   :config
   (mood-line-mode)
   :custom
   (mood-line-glyph-alist mood-line-glyphs-fira-code))
 #+END_SRC
 
-* Font Configuration
+
+* Line Numbers
 
 #+BEGIN_SRC emacs-lisp
-(set-face-attribute 'default nil :font "Literata 14" :height runemacs/default-font-size)
-(set-face-attribute 'fixed-pitch nil :font "Literata 14" :height runemacs/default-font-size)
+;; Turn off global line numbers completely
+(global-display-line-numbers-mode -1)
+(setq display-line-numbers-type nil)
+
+;; Make sure scratch and other texty modes stay clean
+(dolist (hook '(fundamental-mode-hook
+                text-mode-hook
+                org-mode-hook))
+  (add-hook hook (lambda () (display-line-numbers-mode -1))))
 #+END_SRC
 
 * Typewriter mode
-(setq scroll-margin 0
-      scroll-conservatively 0
-      scroll-up-aggressively 0.01
-      scroll-down-aggressively 0.01
-      recenter-positions '(5 middle bottom))
-
-(defvar my/typewriter-scrolloff 99999
-  "Scrolloff value used for typewriter mode.")
-
-(define-minor-mode typewriter-mode
-  "Keep point vertically centered while typing."
-  :init-value nil
-  :lighter " ⌨"
-  (if typewriter-mode
-      (progn
-        (setq-local my/typewriter--old-scrolloff (or scroll-margin scroll-conservatively 0))
-        (setq-local scroll-margin my/typewriter-scrolloff))
-    ;; disable → restore
-    (when (boundp 'my/typewriter--old-scrolloff)
-      (setq-local scroll-margin my/typewriter--old-scrolloff))))
-
-* Package Management
 
 #+BEGIN_SRC emacs-lisp
-(require 'package)
-(setq package-archives '(("melpa" . "https://melpa.org/packages/")
-                         ("elpa" . "https://elpa.gnu.org/packages/")))
+(use-package centered-cursor-mode
+  :ensure nil      ;; provided by Nix
+  :demand t)
+#+END_SRC
 
-(package-initialize)
-(unless package-archive-contents (package-refresh-contents))
-(unless (package-installed-p 'use-package) (package-install 'use-package))
+* Markdown
 
-(require 'use-package)
-(setq use-package-always-ensure t)
+#+BEGIN_SRC emacs-lisp
+(use-package markdown-mode
+  :ensure nil
+  :mode ("\\.md\\'" . markdown-mode)
+  :init
+  (setq markdown-fontify-code-blocks-natively t))
 #+END_SRC
 
 * Theme
@@ -144,19 +121,23 @@
 
 #+BEGIN_SRC emacs-lisp
 (use-package ivy
+  :ensure nil
   :diminish
   :bind (("C-s" . swiper)
          :map ivy-minibuffer-map
          ("TAB" . ivy-alt-done)
          ("C-j" . ivy-next-line)
          ("C-k" . ivy-previous-line))
-  :config (ivy-mode 1))
+  :config
+  (ivy-mode 1))
 
 (use-package counsel
+  :ensure nil
   :bind (("M-x" . counsel-M-x)
          ("C-x C-f" . counsel-find-file)))
 
 (use-package which-key
+  :ensure nil
   :diminish
   :init (which-key-mode)
   :config (setq which-key-idle-delay 0.5))
@@ -166,6 +147,7 @@
 
 #+BEGIN_SRC emacs-lisp
 (use-package evil
+  :ensure nil
   :init
   (setq evil-want-integration t
         evil-want-keybinding nil
@@ -179,33 +161,16 @@
   (evil-global-set-key 'motion "k" 'evil-previous-visual-line))
 
 (use-package evil-collection
+  :ensure nil
   :after evil
   :config (evil-collection-init))
-#+END_SRC
-
-* Leader Keys
-
-#+BEGIN_SRC emacs-lisp
-(use-package general
-  :config
-  (general-create-definer rune/leader-keys
-    :keymaps '(normal insert visual emacs)
-    :prefix "SPC"
-    :global-prefix "C-SPC")
-
-  (rune/leader-keys
-    "g" '(:ignore t :which-key "git")
-    "gs" '(magit-status :which-key "git status")
-    "t" '(:ignore t :which-key "toggles")
-    "tt" '(load-theme :which-key "choose theme")))
-
-(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 #+END_SRC
 
 * Org Mode
 
 #+BEGIN_SRC emacs-lisp
 (use-package org
+  :ensure nil   ;; use built-in Org, avoid ELPA org 404
   :hook (org-mode . (lambda ()
                       (org-indent-mode 1)
                       (variable-pitch-mode 1)
@@ -251,14 +216,14 @@
         org-src-tab-acts-natively t          ; Tab works normally in src blocks
         org-confirm-babel-evaluate nil)      ; Don't ask before running code
 
-  ;; Enable execution of code blocks in Org Babel
+	;; Enable execution of code blocks in Org Babel
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((python . t)
      (lua    . t)))
 
 	;; Quick access to files
-  (setq org-agenda-files '("~/Notes/"))
+  (setq org-agenda-files '("~/Documents/Brain/Notes"))
 
   ;; Better refile targets
   (setq org-refile-targets '((org-agenda-files :maxlevel . 3))
@@ -270,6 +235,7 @@
 
 #+BEGIN_SRC emacs-lisp
 (use-package magit
+  :ensure nil
   :custom
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 #+END_SRC
@@ -280,8 +246,8 @@
 (use-package org-journal
   :ensure t
   :custom
-  (org-journal-dir "~/Notes/")
-  (org-journal-file-format "dailies/%m-%d-%Y.org")
+  (org-journal-dir "~/Documents/Brain/Notes")
+  (org-journal-file-format "%Y-%m-%d.org")
   (org-journal-file-type 'daily)
   (org-journal-time-prefix "** ")
   (org-journal-find-file 'find-file)
@@ -295,8 +261,9 @@
 (use-package org-roam
   :ensure t
   :custom
-  (org-roam-directory (file-truename "~/Notes/"))
-  (org-roam-node-display-template "${formatted-tags:30} ${title:*}")
+  (org-roam-directory (file-truename "~/Documents/Brain/Notes/"))
+  (org-roam-dailies-directory "dailies/")
+  (org-roam-node-display-template "${tags:30} ${title:*}")
   (org-roam-completion-everywhere t)
   :bind (("C-c n l" . org-roam-buffer-toggle)
          ("C-c n f" . org-roam-node-find)
@@ -307,14 +274,6 @@
          :map org-mode-map
          ("C-M-i" . completion-at-point))
   :config
-  ;; Custom accessor to format tags with # prefix
-  (cl-defmethod org-roam-node-formatted-tags ((node org-roam-node))
-    "Format tags with # prefix for display"
-    (let ((tags (org-roam-node-tags node)))
-      (if tags
-          (mapconcat (lambda (tag) (concat "#" tag)) tags " ")
-        "")))
-
   (org-roam-db-autosync-mode))
 #+END_SRC
 
@@ -322,7 +281,7 @@
 
 #+BEGIN_SRC emacs-lisp
 (use-package super-save
-  :ensure t
+  :ensure nil
   :config
   (super-save-mode +1)
   (setq super-save-auto-save-when-idle t)
@@ -333,5 +292,59 @@
 
 #+BEGIN_SRC emacs-lisp
 (use-package darkroom
-  :ensure t)
+  :ensure nil)
 #+END_SRC
+
+* Spell checking (Hunspell + Flyspell)
+
+#+BEGIN_SRC emacs-lisp
+;; Use hunspell as the spell checker
+(setq ispell-program-name "hunspell")
+(setq ispell-dictionary "en_US")
+
+;; Optional: tell Hunspell where to look for dictionaries, if needed.
+;; Usually not necessary on NixOS, but you can uncomment and adjust:
+;; (setenv "DICPATH" (concat (getenv "HOME") "/.nix-profile/share/hunspell"))
+
+;; Enable spell checking in writing modes
+(dolist (hook '(text-mode-hook
+                markdown-mode-hook
+                org-mode-hook))
+  (add-hook hook #'flyspell-mode))
+
+;; In programming modes, only check comments/strings:
+(add-hook 'prog-mode-hook #'flyspell-prog-mode)
+
+;; Handy keybindings for corrections
+(with-eval-after-load 'flyspell
+  ;; Correct word at point
+  (define-key flyspell-mode-map (kbd "C-;") #'flyspell-correct-word-before-point)
+  ;; Move to next error
+  (define-key flyspell-mode-map (kbd "M-]") #'flyspell-goto-next-error))
+#+END_SRC
+
+* Harper
+
+#+BEGIN_SRC emacs-lisp
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-server-programs
+               '(text-mode . ("harper-ls" "--stdio"))))
+#+END_SRC
+
+* Desktop Mode
+
+#+BEGIN_SRC emacs-lisp
+;; Store session files in ~/.emacs.d
+(setq desktop-dirname (expand-file-name "~/.emacs.d/")
+      desktop-path (list desktop-dirname)
+      desktop-base-file-name "emacs.desktop"
+      desktop-save 'if-exists          ;; save automatically if file exists
+      desktop-load-locked-desktop t    ;; load even if marked "in use"
+      desktop-restore-eager 10)        ;; restore first few buffers quickly
+
+(desktop-save-mode 1)
+
+;; Remember cursor position in files
+(save-place-mode 1)
+#+END_SRC
+

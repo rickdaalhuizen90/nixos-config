@@ -27,6 +27,8 @@
     google-chrome
     android-tools
     anki
+    hunspell
+    hunspellDicts.en_US
     teams
     wireshark-qt
     obsidian
@@ -50,6 +52,7 @@
     ffmpeg_6-headless
     jq
     wl-clipboard
+    xclip
     pandoc
     asciidoctor
     nodejs_24

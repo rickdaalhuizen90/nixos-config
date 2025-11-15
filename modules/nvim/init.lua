@@ -67,12 +67,6 @@ vim.pack.add({
     { src = 'https://github.com/junegunn/goyo.vim' },
     { src = 'https://github.com/echasnovski/mini.statusline' },
     { src = 'https://github.com/nvim-tree/nvim-web-devicons' },
-    { src = 'https://github.com/folke/zen-mode.nvim' },
-    { src = 'https://github.com/folke/twilight.nvim' },
-    { src = 'https://github.com/habamax/vim-asciidoctor' },
-    { src = 'https://github.com/nvim-lua/plenary.nvim' },
-    { src = 'https://github.com/epwalsh/obsidian.nvim' },
-    { src = 'https://github.com/joshuadanpeterson/typewriter.nvim' },
     -- { src = 'https://github.com/maxmx03/solarized.nvim', },
 })
 
@@ -277,78 +271,3 @@ require('lspconfig').harper_ls.setup {
 
 vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "Code action" })
 vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, { desc = "Show diagnostic" })
-
--- ZEN / TWILIGHT / TYPEWRITER -------------------------------------
-require("zen-mode").setup({
-    window = {
-        backdrop = 0.95,
-        width = 80,
-        options = {
-            number = false,
-            relativenumber = false,
-            signcolumn = "no",
-            cursorline = false,
-        },
-    },
-    plugins = {
-        twilight = { enabled = true },
-        options = {
-            enabled = true,
-            ruler = false,
-            showcmd = false,
-            laststatus = 0,
-        },
-    },
-    alacritty = {
-        enabled = false,
-        font = "18",
-    },
-    on_open = function()
-        vim.cmd("TWEnable")
-        vim.opt.wrap = true
-    end,
-    on_close = function()
-        vim.cmd("TWDisable")
-        vim.opt.wrap = false
-    end,
-})
-
-require("twilight").setup({
-    context = 10,
-    dimming = {
-        alpha = 0.5,
-    },
-})
-
-require("typewriter").setup({
-    enable_with_zen_mode = false,
-    keep_cursor_position = true,
-    enable_notifications = true,
-    enable_horizontal_scroll = false,
-    start_enabled = false,
-    always_center = false,
-})
-
--- OBSIDIAN ---------------------------------------------------------
-require("obsidian").setup({
-    workspaces = {
-        {
-            name = "Personal",
-            path = "~/Documents/Notes",
-        },
-    },
-    daily_notes = {
-        folder = "Fleeting",
-        date_format = "%Y-%m-%d",
-    },
-})
-
-vim.api.nvim_create_autocmd("FileType", {
-    pattern = { "markdown", "text" },
-    callback = function()
-        vim.o.scrolloff = math.floor(vim.api.nvim_win_get_height(0) / 2)
-    end,
-})
-
-vim.keymap.set("n", "<leader>z", "<cmd>ZenMode<CR>", { desc = "Zen mode" })
-vim.keymap.set("n", "<leader>tw", "<cmd>Twilight<CR>", { desc = "Toggle Twilight" })

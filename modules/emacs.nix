@@ -6,7 +6,6 @@
     package = pkgs.emacs;
 
     extraPackages = (epkgs: with epkgs; [
-      vterm
       pdf-tools
       evil
       evil-collection
@@ -16,6 +15,13 @@
       mood-line
       modus-themes
       olivetti
+      centered-cursor-mode
+      markdown-mode
+      ivy
+      counsel
+      which-key
+      super-save
+      darkroom
       (treesit-grammars.with-grammars (grammars: []))
     ]);
   };
@@ -27,11 +33,11 @@
 
   systemd.user.services.emacs.Service.WorkingDirectory = "/home/rick";
 
-  home.file.".config/emacs/init.el" = {
+  home.file.".emacs.d/init.el" = {
     source = ./emacs/init.el;
   };
 
-  home.file.".config/emacs/config.org" = {
+  home.file.".emacs.d/config.org" = {
     source = ./emacs/config.org;
   };
 }
