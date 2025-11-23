@@ -16,6 +16,7 @@
       modus-themes
       olivetti
       centered-cursor-mode
+      languagetool
       markdown-mode
       ivy
       counsel

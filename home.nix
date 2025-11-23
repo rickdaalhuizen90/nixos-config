@@ -26,6 +26,7 @@
     cargo
     google-chrome
     android-tools
+    languagetool
     anki
     hunspell
     hunspellDicts.en_US
