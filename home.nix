@@ -42,6 +42,8 @@
     vlc
     signal-desktop
     #transmission_4-qt
+    ghostty
+    lmstudio
     qbittorrent
     zoxide
     novelwriter
@@ -63,7 +65,8 @@
     lua-language-server
     nodePackages.typescript-language-server
     vscode-langservers-extracted
-    ollama
+    llama-cpp
+    gemini-cli
     direnv
     jadx
     frida-tools
