@@ -5,133 +5,93 @@
     ./hardware-configuration.nix
   ];
 
-   # Networking
-  networking = {
-    hostName = "nixos";
-    networkmanager.enable = true;
-    nameservers = [ "13.248.221.253" "1.1.1.1" "1.0.0.1" ];
-  };
+  nixpkgs.config.allowUnfree = true;
+
+  # Networking
+  networking.hostName = "nixos";
+  networking.networkmanager.enable = true;
+  networking.nameservers = [
+    "9.9.9.9" "149.112.112.112"
+    "2620:fe::fe" "2620:fe::9"
+  ];
 
   # Localization
   time.timeZone = "Europe/Brussels";
-  i18n = {
-    defaultLocale = "en_US.UTF-8";
-    extraLocaleSettings.LC_TIME = "nl_NL.UTF-8";
-  };
+  i18n.defaultLocale = "en_US.UTF-8";
+  i18n.extraLocaleSettings.LC_TIME = "nl_NL.UTF-8";
 
-  # Desktop environment
-  services = {
-    xserver = {
-      enable = true;
-      xkb.layout = "us";
-      desktopManager.gnome.enable = true;
-      displayManager.gdm.enable = true;
-    };
-    printing.enable = true;
+  # Boot
+  boot.kernelParams = [
+    "mem_sleep_default=deep"
+    "amd_pstate=active"
+    "nowatchdog"
+  ];
+  boot.initrd.kernelModules = [ "amdgpu" ];
 
-    # Power management - TLP configuration
-    power-profiles-daemon.enable = false;
-    tlp = {
-      enable = true;
-      settings = {
-        CPU_DRIVER_OPMODE_ON_AC = "active";
-        CPU_SCALING_GOVERNOR_ON_AC = "schedutil";
-        CPU_BOOST_ON_AC = 1;
-        CPU_BOOST_ON_BAT = 0;
-        START_CHARGE_THRESH_BAT0 = 40;
-        STOP_CHARGE_THRESH_BAT0 = 80;
-        RADEON_DPM_STATE_ON_AC = "balanced";
-      };
-    };
-
-    # Audio
-    pipewire = {
-      enable = true;
-      alsa.enable = true;
-      alsa.support32Bit = true;
-      pulse.enable = true;
-    };
-
-    # Applications
-    ollama = {
-      enable = true;
-      loadModels = [ "llama3.1:8b" "qwen2.5-coder:7b" "gemma3n:e2b" ];
-      acceleration = "rocm";
-    };
-    transmission = {
-      enable = true;
-      package = pkgs.transmission_4;
-      settings.download-dir = "${config.services.transmission.home}/Downloads";
-    };
-    postgresql = {
-      enable = true;
-      package = pkgs.postgresql_16;
-      ensureUsers = [{ name = "postgres"; }];
-    };
-  };
-
-  # Security and power management
+  # Security
   security.rtkit.enable = true;
-  powerManagement.enable = true;
+
+  # Desktop
+  services.xserver = {
+    enable = true;
+    desktopManager.gnome.enable = true;
+    displayManager.gdm.enable = true;
+  };
+
+  # Audio
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    pulse.enable = true;
+  };
+
+  # Power Management
+  services.power-profiles-daemon.enable = false;
+  services.tlp = {
+    enable = true;
+    settings = {
+      START_CHARGE_THRESH_BAT0 = 40;
+      STOP_CHARGE_THRESH_BAT0 = 80;
+      CPU_BOOST_ON_AC = 1;
+      CPU_BOOST_ON_BAT = 0;
+      USB_AUTOSUSPEND = 1;
+    };
+  };
+
+  # Suspend/Hibernate
+  services.logind = {
+    lidSwitch = "suspend";
+    lidSwitchExternalPower = "suspend";
+    extraConfig = ''
+      HandlePowerKey=suspend
+      IdleAction=lock
+      IdleActionSec=5min
+    '';
+  };
+
+  # Hardware - GPU (SIMPLIFIED - NixOS 25.05 handles DRI automatically)
+  hardware.opengl = {
+    enable = true;
+    extraPackages = with pkgs; [
+      amdvlk  # Vulkan driver
+    ];
+  };
 
   # Virtualization
-  virtualisation = {
-    waydroid.enable = true;
-    docker = {
-      enable = true;
-      daemon.settings = {
-        dns = [ "1.1.1.1" "8.8.8.8" ];
-        log-driver = "journald";
-        registry-mirrors = [ "https://mirror.gcr.io" ];
-        storage-driver = "overlay2";
-      };
-      rootless = {
-        enable = true;
-        setSocketVariable = true;
-      };
-    };
+  virtualisation.docker.enable = true;
+
+  # Applications
+  services.postgresql = {
+    enable = true;
+    package = pkgs.postgresql_16;
   };
 
-  # Package and program configuration
-  nixpkgs.config = {
-    allowUnfree = true;
-    rocmSupport = true;
-    android_sdk.accept_license = true;
-    allowUnsupportedSystem = true;
-  };
-
-  nix.settings.experimental-features = [ "nix-command" "flakes" "pipe-operators" ];
-
-  programs = {
-    firefox.enable = true;
-    zsh.enable = true;
-    java.package = pkgs.jdk21;
-    fuse.userAllowOther = true;
-    steam = {
-      enable = true;
-      remotePlay.openFirewall = true;
-      dedicatedServer.openFirewall = true;
-      extraCompatPackages = with pkgs; [
-        proton-ge-bin
-      ];
-    };
-  };
-
-  # System packages
-  environment = {
-    systemPackages = with pkgs; [
-      coreutils wget curl git gnupg age gcc htop tree zip unzip p7zip
-      docker-buildx qemu gnumake protonup openvpn
-    ];
-    gnome.excludePackages = with pkgs; [ gedit totem geary ];
-  };
-
-  # User configuration
-  users.users.${username} = {
-    isNormalUser = true;
-    description = "Rick Daalhuizen";
-    extraGroups = [ "networkmanager" "wheel" "docker" ];
-    shell = pkgs.zsh;
+  # Nix settings
+  nix.settings = {
+    experimental-features = [ "nix-command" "flakes" "pipe-operators"];
+    auto-optimise-store = true;
+    trusted-users = [ "root" "${username}" ];
+    cores = 0;
   };
 
   nix.gc = {
@@ -140,6 +100,29 @@
     options = "--delete-older-than 7d";
   };
 
+  # Programs
+  programs = {
+    firefox.enable = true;
+    zsh.enable = true;
+    steam.enable = true;
+  };
+
+  # System packages (llama.cpp is now optional - install via nix-shell when needed)
+  environment.systemPackages = with pkgs; [
+    coreutils git curl wget htop
+    powertop lm_sensors
+    docker-buildx gnumake
+    vlc unzip
+    usbutils pciutils
+  ];
+
+  # User
+  users.users.${username} = {
+    isNormalUser = true;
+    description = "Rick Daalhuizen";
+    extraGroups = [ "networkmanager" "wheel" "docker" ];
+    shell = pkgs.zsh;
+  };
+
   system.stateVersion = "25.05";
 }
-

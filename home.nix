@@ -30,7 +30,6 @@
     anki
     hunspell
     hunspellDicts.en_US
-    teams
     wireshark-qt
     obsidian
     ghidra-bin

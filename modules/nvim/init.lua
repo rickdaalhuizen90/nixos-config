@@ -112,15 +112,13 @@ blink.setup({
 })
 
 -- LSP --------------------------------------------------------------
-local lspconfig = require('lspconfig')
-
 -- blink has its own helper for LSP capabilities
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require("blink.cmp").get_lsp_capabilities(capabilities)
 
 local servers = {
-    "lua_ls", "elixirls", "marksman", "harper_ls",
-    "intelephense", "eslint", "clangd", "ts_ls",
+    "lua_ls", "rust_analyzer", "gopls", "marksman", "harper_ls",
+    "intelephense", "eslint", "clangd", "html", "ts_ls",
 }
 
 local on_attach = function(client, bufnr)
@@ -140,6 +138,7 @@ for _, server_name in ipairs(servers) do
         on_attach = on_attach,
         capabilities = capabilities,
     }
+
     if server_name == "lua_ls" then
         opts.settings = {
             Lua = {
@@ -149,11 +148,14 @@ for _, server_name in ipairs(servers) do
             },
         }
     end
-    lspconfig[server_name].setup(opts)
+
+    vim.lsp.config(server_name, opts)
+
+    vim.lsp.enable(server_name)
 end
 
 -- intelephense extra
-lspconfig.intelephense.setup({
+vim.lsp.config('intelephense', {
     on_attach = on_attach,
     capabilities = capabilities,
     settings = {
@@ -171,6 +173,8 @@ lspconfig.intelephense.setup({
         }
     },
 })
+
+vim.lsp.enable('intelephense')
 
 -- FZF --------------------------------------------------------------
 local fzf = require('fzf-lua')
@@ -233,7 +237,7 @@ require('mini.statusline').setup {
 }
 
 -- HARPER -----------------------------------------------------------
-require('lspconfig').harper_ls.setup {
+vim.lsp.config('harper_ls', {
     filetypes = { "markdown", "text", "latex" },
     settings = {
         ["harper-ls"] = {
@@ -267,7 +271,9 @@ require('lspconfig').harper_ls.setup {
             excludePatterns = {}
         }
     }
-}
+})
+
+vim.lsp.enable('harper_ls')
 
 vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "Code action" })
 vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, { desc = "Show diagnostic" })
