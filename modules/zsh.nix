@@ -27,6 +27,7 @@ in
       la  = "ls -A";
       cl  = "clear";
       open = "xdg-open";
+      docker = "podman";
     };
 
     history = {

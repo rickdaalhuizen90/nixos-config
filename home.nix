@@ -15,7 +15,7 @@
     ./modules/zsh.nix
     ./modules/tmux.nix
     ./modules/git.nix
-    ./modules/htop.nix
+    #./modules/htop.nix
     ./modules/nvim.nix
     ./modules/emacs.nix
     ./modules/aider.nix
@@ -24,7 +24,6 @@
   home.packages = with pkgs; [
     rustc
     cargo
-    google-chrome
     android-tools
     languagetool
     anki
@@ -38,7 +37,8 @@
     calibre
     pcsx2
     mitmproxy
-    vlc
+    btop
+    jdupes
     signal-desktop
     #transmission_4-qt
     ghostty
@@ -53,12 +53,12 @@
     fzf
     ffmpeg_6-headless
     jq
+    yq
     wl-clipboard
     xclip
     pandoc
     asciidoctor
     nodejs_24
-    #llama-cpp
     github-copilot-intellij-agent
     valgrind
     lua-language-server
@@ -98,14 +98,13 @@
     sops
   ];
 
-  sops.secrets.openai_key = {
+  sops.secrets."openrouter/api_key" = {
     sopsFile = ./secrets/secrets.yaml;
-    key      = "OPENAI_API_KEY";
   };
 
   programs.zsh.initContent = ''
-export OPENAI_API_KEY="$(<"${config.sops.secrets.openai_key.path}")"
-'';
+    export OPEROUTER_API_KEY="${config.sops.placeholder."openrouter/api_key"}"
+  '';
 
   fonts.fontconfig.enable = true;
 

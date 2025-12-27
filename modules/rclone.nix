@@ -1,28 +1,10 @@
-{ config, pkgs, lib, username, ... }:
+{ config, pkgs, lib, ... }:
 
 {
-
-  home.packages = with pkgs; [ sops age ];
+  home.packages = with pkgs; [ sops age rclone ];
 
   sops.secrets = {
-    "rclone/gdrive/client_id" = {
-      sopsFile = ../secrets/secrets.yaml;
-    };
-    "rclone/gdrive/client_secret" = {
-      sopsFile = ../secrets/secrets.yaml;
-    };
-    "rclone/gdrive/token" = {
-      sopsFile = ../secrets/secrets.yaml;
-    };
-    "rclone/farida_onedrive/token" = {
-      sopsFile = ../secrets/secrets.yaml;
-    };
-    "rclone/farida_gdrive/token" = {
-      sopsFile = ../secrets/secrets.yaml;
-    };
   };
-
-  programs.rclone.enable = true;
 
   sops.age.keyFile = "${config.home.homeDirectory}/.config/sops/age/keys.txt";
 
@@ -31,56 +13,17 @@
     path = "${config.xdg.configHome}/rclone/rclone.conf";
     mode = "0600";
     content = ''
-      [gdrive]
-      type = drive
-      client_id = ${config.sops.placeholder."rclone/gdrive/client_id"}
-      client_secret = ${config.sops.placeholder."rclone/gdrive/client_secret"}
-      token = ${config.sops.placeholder."rclone/gdrive/token"}
-      scope = drive
-      team_drive =
-
-      [farida_onedrive]
-      type = onedrive
-      drive_id = 15CEDD6687CA7296
-      drive_type = personal
-      token = ${config.sops.placeholder."rclone/farida_onedrive/token"}
-
-      [farida_gdrive]
-      type = drive
-      scope = drive
-      team_drive =
-      token = ${config.sops.placeholder."rclone/farida_gdrive/token"}
+      [hetzner-sftp]
+      type = sftp
+      host = u524188.your-storagebox.de
+      user = u524188
+      port = 23
+      key_file = ${config.home.homeDirectory}/.ssh/id_ed25519
+      ssh_cmd = ${pkgs.openssh}/bin/ssh -o ServerAliveInterval=60
     '';
   };
 
-  systemd.user.services.rclone-gdrive = {
-    Unit = {
-      Description = "Rclone Google Drive Mount";
-      After = [ "network-online.target" ];
-      Wants = [ "network-online.target" ];
-    };
-
-    Service = {
-      Type = "notify";
-      ExecStart = ''
-      ${pkgs.rclone}/bin/rclone mount gdrive: ${config.home.homeDirectory}/gdrive \
-        --config ${config.sops.templates."rclone-config-file".path} \
-        --vfs-cache-mode writes \
-        --log-level DEBUG \
-        --log-file ${config.home.homeDirectory}/.local/share/rclone/rclone-gdrive.log
-      '';
-      ExecStop = "${pkgs.fuse}/bin/fusermount -uz ${config.home.homeDirectory}/gdrive";
-      Restart = "on-failure";
-      RestartSec = 10;
-    };
-
-    Install = {
-      WantedBy = [ "default.target" ];
-    };
-  };
-
-  home.activation.createGDriveDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    mkdir -p "$HOME/gdrive"
-    mkdir -p "$HOME/.local/share/rclone"
+  home.activation.createRcloneDirs = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    mkdir -p "$HOME/.config/rclone"
   '';
 }
