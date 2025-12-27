@@ -53,31 +53,32 @@
     '';
   };
 
-  systemd.user.services.rclone-gdrive = {
-    Unit = {
-      Description = "Rclone Google Drive Mount";
-      After = [ "network-online.target" ];
-      Wants = [ "network-online.target" ];
-    };
-
-    Service = {
-      Type = "notify";
-      ExecStart = ''
-      ${pkgs.rclone}/bin/rclone mount gdrive: ${config.home.homeDirectory}/gdrive \
-        --config ${config.sops.templates."rclone-config-file".path} \
-        --vfs-cache-mode writes \
-        --log-level DEBUG \
-        --log-file ${config.home.homeDirectory}/.local/share/rclone/rclone-gdrive.log
-      '';
-      ExecStop = "${pkgs.fuse}/bin/fusermount -uz ${config.home.homeDirectory}/gdrive";
-      Restart = "on-failure";
-      RestartSec = 10;
-    };
-
-    Install = {
-      WantedBy = [ "default.target" ];
-    };
-  };
+  # COMMENTED OUT/REMOVED - Systemd service disabled
+  # systemd.user.services.rclone-gdrive = {
+  #   Unit = {
+  #     Description = "Rclone Google Drive Mount";
+  #     After = [ "network-online.target" ];
+  #     Wants = [ "network-online.target" ];
+  #   };
+  #
+  #   Service = {
+  #     Type = "notify";
+  #     ExecStart = ''
+  #     ${pkgs.rclone}/bin/rclone mount gdrive: ${config.home.homeDirectory}/gdrive \
+  #       --config ${config.sops.templates."rclone-config-file".path} \
+  #       --vfs-cache-mode writes \
+  #       --log-level DEBUG \
+  #       --log-file ${config.home.homeDirectory}/.local/share/rclone/rclone-gdrive.log
+  #     '';
+  #     ExecStop = "${pkgs.fuse}/bin/fusermount -uz ${config.home.homeDirectory}/gdrive";
+  #     Restart = "on-failure";
+  #     RestartSec = 10;
+  #   };
+  #
+  #   Install = {
+  #     WantedBy = [ "default.target" ];
+  #   };
+  # };
 
   home.activation.createGDriveDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     mkdir -p "$HOME/gdrive"

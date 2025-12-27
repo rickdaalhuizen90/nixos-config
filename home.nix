@@ -24,7 +24,6 @@
   home.packages = with pkgs; [
     rustc
     cargo
-    google-chrome
     android-tools
     languagetool
     anki
