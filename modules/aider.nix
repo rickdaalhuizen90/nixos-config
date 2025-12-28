@@ -1,7 +1,7 @@
 { config, pkgs, ... }:
 
 let
-  aiderConfig = pkgs.writeText "aider.conf.yml" ''
+  aiderConfig = ''
     model: openrouter/deepseek/deepseek-v3.2
     weak-model: ollama_chat/llama3.2:latest
     edit-format: diff
@@ -20,6 +20,6 @@ in
 {
   home.packages = with pkgs; [ aider-chat ];
 
-  xdg.configFile."aider/aider.conf.yml".source = aiderConfig;
+  home.file.".aider.conf.yml".text = aiderConfig;
 }
 
