@@ -79,7 +79,7 @@
 
   # Virtualization
   #virtualisation.docker.enable = true;
-  virtualisation.podman.enable = true
+  virtualisation.podman.enable = true;
 
   # Applications
   services.postgresql = {
@@ -121,21 +121,9 @@
   users.users.${username} = {
     isNormalUser = true;
     description = "Rick Daalhuizen";
-    extraGroups = [ "networkmanager" "wheel" "docker" ];
+    extraGroups = [ "networkmanager" "wheel" "docker" "podman" ];
     shell = pkgs.zsh;
   };
-
-  programs.ssh.extraConfig = ''
-    Host backup
-      HostName u524188.your-storagebox.de
-      User u524188
-      Port 23
-      IdentityFile ~/.ssh/id_ed25519
-      ServerAliveInterval 60
-      ServerAliveCountMax 3
-      TCPKeepAlive yes
-      Compression yes
-  '';
 
   system.stateVersion = "25.05";
 }

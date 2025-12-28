@@ -52,6 +52,8 @@
     ripgrep
     fzf
     ffmpeg_6-headless
+    bitwarden
+    bitwarden-cli
     jq
     yq
     wl-clipboard
@@ -124,6 +126,18 @@
     "$HOME/.local/bin"
     "$HOME/bin"
   ];
+
+  programs.ssh.extraConfig = ''
+    Host backup
+      HostName u524188.your-storagebox.de
+      User u524188
+      Port 23
+      IdentityFile ~/.ssh/id_ed25519
+      ServerAliveInterval 60
+      ServerAliveCountMax 3
+      TCPKeepAlive yes
+      Compression yes
+  '';
 
   sops.age.keyFile = "${config.home.homeDirectory}/.config/sops/age/keys.txt";
 }
