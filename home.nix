@@ -96,6 +96,7 @@
     cascadia-code
     nerd-fonts.hack
     google-fonts
+    dejavu_fonts
     iosevka
     sops
   ];

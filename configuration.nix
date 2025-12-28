@@ -113,7 +113,7 @@
     coreutils git curl wget htop
     powertop lm_sensors
     docker-buildx gnumake
-    vlc unzip
+    vlc unzip zstd sshfs
     usbutils pciutils
   ];
 
