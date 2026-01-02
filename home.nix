@@ -24,6 +24,14 @@
   home.packages = with pkgs; [
     rustc
     cargo
+    gcc
+    binutils
+    radare2
+    gdb
+    gef
+    aflplusplus
+    ltrace
+    strace
     android-tools
     languagetool
     anki
