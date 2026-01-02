@@ -33,7 +33,7 @@
 * UI Configuration
 
 #+BEGIN_SRC emacs-lisp
-(defvar runemacs/default-font-size 140)
+(defvar runemacs/default-font-size 180)
 
 ;; Clean UI
 (setq inhibit-startup-message t
@@ -113,8 +113,8 @@
 * Theme
 
 #+BEGIN_SRC emacs-lisp
-;;(load-theme 'modus-vivendi t)
-(load-theme 'modus-operandi t)
+(load-theme 'modus-vivendi t)
+;;(load-theme 'modus-operandi t)
 #+END_SRC
 
 * Completion Framework

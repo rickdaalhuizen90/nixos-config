@@ -111,7 +111,7 @@
   # System packages (llama.cpp is now optional - install via nix-shell when needed)
   environment.systemPackages = with pkgs; [
     coreutils git curl wget htop
-    powertop lm_sensors
+    powertop lm_sensors tree
     docker-buildx gnumake
     vlc unzip zstd sshfs
     usbutils pciutils
