@@ -42,6 +42,14 @@ vim.api.nvim_create_autocmd('TextYankPost', {
     desc = 'Highlight text on yank',
 })
 
+vim.api.nvim_create_autocmd("BufWritePost", {
+    pattern = "*.rs",
+    callback = function()
+        -- Run clippy on save if you want that behavior
+        vim.cmd("!cargo clippy --quiet")
+    end,
+})
+
 -- you can keep this, but blink does completion itself; this won’t hurt
 vim.api.nvim_create_autocmd('LspAttach', {
     callback = function(ev)
@@ -128,6 +136,8 @@ local on_attach = function(client, bufnr)
     map('n', 'gD', vim.lsp.buf.declaration, opts)
     map('n', 'gd', vim.lsp.buf.definition, opts)
     map('n', 'K', vim.lsp.buf.hover, opts)
+    map('n', 'gi', vim.lsp.buf.implementation, opts)
+    map('n', '<leader>rn', vim.lsp.buf.rename, opts)
     map('n', '<leader>ca', vim.lsp.buf.code_action, opts)
     map('n', '<C-CR>', vim.lsp.buf.code_action, opts)
     map('i', '<C-CR>', vim.lsp.buf.code_action, opts)
@@ -175,6 +185,19 @@ vim.lsp.config('intelephense', {
 })
 
 vim.lsp.enable('intelephense')
+
+vim.lsp.config('rust_analyzer', {
+    on_attach = on_attach,
+    capabilities = capabilities,
+    settings = {
+        ["rust-analyzer"] = {
+            checkOnSave = true,
+            cargo = {
+                allFeatures = true,
+            },
+        },
+    },
+})
 
 -- FZF --------------------------------------------------------------
 local fzf = require('fzf-lua')

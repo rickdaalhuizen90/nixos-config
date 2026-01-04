@@ -70,7 +70,7 @@
   };
 
   # Hardware - GPU (SIMPLIFIED - NixOS 25.05 handles DRI automatically)
-  hardware.opengl = {
+  hardware.graphics = {
     enable = true;
     extraPackages = with pkgs; [
       amdvlk  # Vulkan driver

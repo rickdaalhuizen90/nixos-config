@@ -22,8 +22,7 @@
   ];
 
   home.packages = with pkgs; [
-    rustc
-    cargo
+    rustup
     gcc
     binutils
     radare2
