@@ -26,9 +26,11 @@
     gcc
     binutils
     radare2
+    tailscale
     gdb
     gef
     aflplusplus
+    nmap
     ltrace
     strace
     android-tools
@@ -108,6 +110,10 @@
     sops
   ];
 
+  services.ollama = {
+    enable = true;
+  };
+
   sops.secrets."openrouter/api_key" = {
     sopsFile = ./secrets/secrets.yaml;
   };
@@ -128,6 +134,7 @@
     FZF_DEFAULT_COMMAND = "rg --files --hidden --follow --no-ignore-vcs --glob \"!{node_modules/*,.git/*,vendor/*,dist/*,build/*}\"";
     NIXPKGS_ALLOW_UNFREE = 1;
     WLR_NO_HARDWARE_CURSORS = "1";
+    OLLAMA_API_BASE = "http://127.0.0.1:11434";
   };
 
   home.sessionPath = [
@@ -135,12 +142,23 @@
     "$HOME/bin"
   ];
 
+  programs.ssh.enable = true;
+
   programs.ssh.extraConfig = ''
     Host backup
       HostName u524188.your-storagebox.de
       User u524188
       Port 23
       IdentityFile ~/.ssh/id_ed25519
+      ServerAliveInterval 60
+      ServerAliveCountMax 3
+      TCPKeepAlive yes
+      Compression yes
+    Host home
+      HostName 192.168.1.30
+      User rick
+      Port 22
+      #IdentityFile ~/.ssh/id_ed25519
       ServerAliveInterval 60
       ServerAliveCountMax 3
       TCPKeepAlive yes
