@@ -30,6 +30,8 @@
     displayManager.gdm.enable = true;
   };
 
+  services.fwupd.enable = true;
+
   # Audio
   services.pipewire = {
     enable = true;
@@ -42,11 +44,12 @@
   services.tlp = {
     enable = true;
     settings = {
-      START_CHARGE_THRESH_BAT0 = 40;
-      STOP_CHARGE_THRESH_BAT0 = 80;
       CPU_BOOST_ON_AC = 1;
       CPU_BOOST_ON_BAT = 0;
-      USB_AUTOSUSPEND = 1;
+      CPU_SCALING_MAX_FREQ_ON_AC = "5132000";
+      CPU_SCALING_MAX_FREQ_ON_BAT = "1200000";
+      CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
+      CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
     };
   };
 
@@ -59,14 +62,6 @@
       IdleAction=lock
       IdleActionSec=5min
     '';
-  };
-
-  # Hardware - GPU (SIMPLIFIED - NixOS 25.05 handles DRI automatically)
-  hardware.graphics = {
-    enable = true;
-    extraPackages = with pkgs; [
-      amdvlk  # Vulkan driver
-    ];
   };
 
   virtualisation = {
@@ -85,6 +80,10 @@
     events_logger = "file"
     cgroup_manager = "cgroupfs"
   '';
+
+  environment.variables = {
+    GSK_RENDERER = "opengl";
+  };
 
   # Applications
   services.postgresql = {
@@ -130,6 +129,32 @@
     extraGroups = [ "networkmanager" "wheel" "docker" "podman" ];
     shell = pkgs.zsh;
   };
+
+  # Redroid Specifics
+  boot.kernelParams = [
+    "thinkpad_acpi.bios_charge_start_threshold=75"
+    "thinkpad_acpi.bios_charge_stop_threshold=80"
+    "acpi.ec_no_wakeup=1"
+  ];
+
+  boot.kernelPatches = [ {
+    name = "redroid-config";
+    patch = null;
+    extraConfig = ''
+      ANDROID_BINDER_IPC y
+      ANDROID_BINDERFS y
+    '';
+  } ];
+
+  boot.specialFileSystems."/dev/binderfs" = {
+    device = "binder";
+    fsType = "binder";
+    options = [ "nofail" ];
+  };
+
+  systemd.tmpfiles.rules = [
+    "d /dev/binderfs 0755 root root -"
+  ];
 
   system.stateVersion = "25.05";
 }
