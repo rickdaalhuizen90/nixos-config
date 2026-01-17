@@ -13,21 +13,6 @@
   boot.kernelModules = [ ];
   boot.extraModulePackages = [ ];
 
-  boot.kernelPatches = [ {
-    name = "redroid-config";
-    patch = null;
-    extraConfig = ''
-      ANDROID_BINDER_IPC y
-      ANDROID_BINDERFS y
-      ANDROID_BINDER_DEVICES "binder,hwbinder,vndbinder"
-    '';
-  } ];
-
-  boot.specialFileSystems."/dev/binderfs" = {
-    device = "binder";
-    fsType = "binder";
-  };
-
   boot = {
     loader = {
       systemd-boot.enable = true;
@@ -40,9 +25,6 @@
     opencl.enable = true;
     amdvlk.enable = true;
   };
-
-  hardware.bluetooth.enable = true;
-  services.blueman.enable = true;
 
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/fe90fec6-d4a9-42b0-9808-27541417e477";
@@ -63,10 +45,10 @@
   # (the default) this is the recommended approach. When using systemd-networkd it's
   # still possible to use this option, but it's recommended to use it in conjunction
   # with explicit per-interface declarations with `networking.interfaces.<interface>.useDHCP`.
-  networking.useDHCP = lib.mkDefault true;
+  networking.useDHCP = lib.mkDefault false;
   # networking.interfaces.enp1s0f0.useDHCP = lib.mkDefault true;
-  # networking.interfaces.eth0.useDHCP = lib.mkDefault true;
-  # networking.interfaces.wlp2s0.useDHCP = lib.mkDefault true;
+  networking.interfaces.eth0.useDHCP = lib.mkDefault true;
+  networking.interfaces.wlp2s0.useDHCP = lib.mkDefault true;
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
