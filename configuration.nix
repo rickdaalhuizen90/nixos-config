@@ -20,14 +20,6 @@
   i18n.defaultLocale = "en_US.UTF-8";
   i18n.extraLocaleSettings.LC_TIME = "nl_NL.UTF-8";
 
-  # Boot
-  boot.kernelParams = [
-    "mem_sleep_default=deep"
-    "amd_pstate=active"
-    "nowatchdog"
-  ];
-  boot.initrd.kernelModules = [ "amdgpu" ];
-
   # Security
   security.rtkit.enable = true;
 
@@ -77,9 +69,22 @@
     ];
   };
 
-  # Virtualization
-  #virtualisation.docker.enable = true;
-  virtualisation.podman.enable = true;
+  virtualisation = {
+    containers.enable = true;
+    podman = {
+      enable = true;
+      dockerCompat = true;
+      dockerSocket.enable = true;
+      extraPackages = [ pkgs.runc ];
+    };
+  };
+
+  environment.etc."containers/containers.conf".text = lib.mkForce ''
+    [engine]
+    runtime = "runc"
+    events_logger = "file"
+    cgroup_manager = "cgroupfs"
+  '';
 
   # Applications
   services.postgresql = {
@@ -115,6 +120,7 @@
     docker-buildx gnumake
     vlc unzip zstd sshfs
     usbutils pciutils
+    dive podman-tui podman-compose
   ];
 
   # User

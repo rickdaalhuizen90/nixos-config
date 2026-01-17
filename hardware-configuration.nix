@@ -9,9 +9,24 @@
     ];
 
   boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "thunderbolt" "usb_storage" "usbhid" "sd_mod" ];
-  boot.initrd.kernelModules = [ ];
+  boot.initrd.kernelModules = [ "amdgpu" ];
   boot.kernelModules = [ ];
   boot.extraModulePackages = [ ];
+
+  boot.kernelPatches = [ {
+    name = "redroid-config";
+    patch = null;
+    extraConfig = ''
+      ANDROID_BINDER_IPC y
+      ANDROID_BINDERFS y
+      ANDROID_BINDER_DEVICES "binder,hwbinder,vndbinder"
+    '';
+  } ];
+
+  boot.specialFileSystems."/dev/binderfs" = {
+    device = "binder";
+    fsType = "binder";
+  };
 
   boot = {
     loader = {

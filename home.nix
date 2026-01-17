@@ -89,6 +89,7 @@
     harper
     marksman
     pipx
+    bun
     python312Packages.pip
     yt-dlp
     spotdl
@@ -135,6 +136,7 @@
     NIXPKGS_ALLOW_UNFREE = 1;
     WLR_NO_HARDWARE_CURSORS = "1";
     OLLAMA_API_BASE = "http://127.0.0.1:11434";
+    DOCKER_HOST=unix:///var/run/podman/podman.sock;
   };
 
   home.sessionPath = [
