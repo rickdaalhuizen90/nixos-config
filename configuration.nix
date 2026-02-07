@@ -52,6 +52,8 @@
     options bluetooth disable_ertm=1
   '';
 
+  boot.kernel.sysctl."net.ipv4.ip_unprivileged_port_start" = 80;
+
   services.pipewire = {
     enable = true;
     pulse.enable = true;
@@ -101,15 +103,9 @@
 
   environment.variables = {
     GSK_RENDERER = "opengl";
+    EDITOR = "vim";
   };
 
-  # Applications
-  services.postgresql = {
-    enable = true;
-    package = pkgs.postgresql_16;
-  };
-
-  # Nix settings
   nix.settings = {
     experimental-features = [ "nix-command" "flakes" "pipe-operators"];
     auto-optimise-store = true;
@@ -123,14 +119,13 @@
     options = "--delete-older-than 7d";
   };
 
-  # Programs
   programs = {
     firefox.enable = true;
     zsh.enable = true;
     steam.enable = true;
+    nano.enable = false;
   };
 
-  # System packages (llama.cpp is now optional - install via nix-shell when needed)
   environment.systemPackages = with pkgs; [
     coreutils git curl wget htop
     powertop lm_sensors tree
@@ -141,7 +136,6 @@
     iptables-nftables-compat
   ];
 
-  # User
   users.users.${username} = {
     isNormalUser = true;
     description = "Rick Daalhuizen";

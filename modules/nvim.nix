@@ -10,7 +10,7 @@
     enable = true;
     package = pkgs.neovim;
     viAlias = true;
-    vimAlias = true;
+    vimAlias = false;
   };
 
   xdg.configFile."nvim/init.lua".source = ./nvim/init.lua;

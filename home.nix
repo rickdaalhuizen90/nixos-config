@@ -16,9 +16,11 @@
     ./modules/tmux.nix
     ./modules/git.nix
     #./modules/htop.nix
+    ./modules/vim.nix
     ./modules/nvim.nix
     ./modules/emacs.nix
     ./modules/aider.nix
+    ./modules/opencode.nix
   ];
 
   home.packages = with pkgs; [
@@ -50,7 +52,9 @@
     jdupes
     signal-desktop
     #transmission_4-qt
-    ghostty
+
+    #ghostty
+    lazygit
     lmstudio
     qbittorrent
     zoxide
@@ -76,7 +80,6 @@
     nodePackages.typescript-language-server
     vscode-langservers-extracted
     llama-cpp
-    gemini-cli
     direnv
     jadx
     frida-tools
@@ -93,7 +96,6 @@
     python312Packages.pip
     yt-dlp
     spotdl
-    logseq
     zotero
     lua
     lua-language-server

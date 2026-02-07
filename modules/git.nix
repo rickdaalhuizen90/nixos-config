@@ -26,7 +26,7 @@
 
     extraConfig = {
       core = {
-        editor = "nano";
+        editor = "vim";
       };
       pull.rebase = false;
       color.ui = "auto";
