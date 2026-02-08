@@ -17,7 +17,7 @@
 
   networking.hosts = {
     "127.0.0.1" = [ "magento.app.test" "n8n.app.test" "odoo.app.test" "akeneo.app.test" ];
-    "198.168.1.30" = [ "headscale.skynet.home" ];
+    "192.168.1.30" = [ "headscale.skynet.home" ];
   };
 
   networking.nftables.enable = true;
