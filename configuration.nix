@@ -19,9 +19,15 @@
     "127.0.0.1" = [ "magento.app.test" "n8n.app.test" "odoo.app.test" "akeneo.app.test" ];
   };
 
-  # Firewall
-  networking.firewall.enable = true;
   networking.nftables.enable = true;
+
+  services.tailscale.enable = true;
+  networking.firewall = {
+    enable = true;
+    checkReversePath = "loose";
+    trustedInterfaces = [ "tailscale0" ];
+    allowedUDPPorts = [ 41641 ];
+  };
 
   # Localization
   time.timeZone = "Europe/Brussels";
@@ -30,6 +36,8 @@
 
   # Security
   security.rtkit.enable = true;
+
+  security.pki.certificates = [ "./certificates/homeserver-root-ca.crt" ];
 
   # Desktop
   services.xserver = {
@@ -123,7 +131,6 @@
     firefox.enable = true;
     zsh.enable = true;
     steam.enable = true;
-    nano.enable = false;
   };
 
   environment.systemPackages = with pkgs; [
