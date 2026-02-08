@@ -37,7 +37,7 @@
   # Security
   security.rtkit.enable = true;
 
-  security.pki.certificates = [ "./certificates/homeserver-root-ca.crt" ];
+  security.pki.certificates = [ (builtins.readFile ./certificates/homeserver-root-ca.crt) ];
 
   # Desktop
   services.xserver = {
