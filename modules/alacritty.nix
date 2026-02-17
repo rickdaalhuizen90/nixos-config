@@ -3,48 +3,10 @@
 {
   programs.alacritty = {
     enable = true;
-    settings = {
-      font = {
-        size = 16;
-      };
-      general = {
-        live_config_reload = true;
-      };
-      window = {
-        opacity = 0.95;
-      };
-      scrolling = {
-        history = 10000;
-      };
-      terminal.shell = {
-        program = "zsh";
-      };
-      colors = {
-        primary = {
-          background = "0x002221";
-          foreground = "0xe6f8f8";
-        };
-        normal = {
-          black   = "0x002221";
-          red     = "0xea3431";
-          green   = "0x00b6b6";
-          yellow  = "0xf8b017";
-          blue    = "0x4894fd";
-          magenta = "0xe01dca";
-          cyan    = "0x1ab2ad";
-          white   = "0x99dddb";
-        };
-        bright = {
-          black   = "0x006562";
-          red     = "0xea3431";
-          green   = "0x00b6b6";
-          yellow  = "0xf8b017";
-          blue    = "0x4894fd";
-          magenta = "0xe01dca";
-          cyan    = "0x1ab2ad";
-          white   = "0xe6f6f6";
-        };
-      };
-    };
   };
+
+  home.file.".config/alacritty/alacritty.toml".text =
+    (builtins.readFile ./alacritty/alacritty.toml) +
+    "\n" +
+    (builtins.readFile ./alacritty/themes/inferno.toml);
 }

@@ -10,6 +10,7 @@
   '';
 
   imports = [
+    ./modules/sway.nix
     ./modules/rclone.nix
     ./modules/alacritty.nix
     ./modules/zsh.nix
@@ -20,7 +21,6 @@
     ./modules/nvim.nix
     ./modules/emacs.nix
     ./modules/aider.nix
-    ./modules/opencode.nix
   ];
 
   home.packages = with pkgs; [
@@ -38,12 +38,15 @@
     android-tools
     languagetool
     anki
+    xfce.mousepad
+    notepad-next
     hunspell
     hunspellDicts.en_US
     wireshark-qt
     obsidian
     ghidra-bin
     burpsuite
+    brave
     libreoffice
     calibre
     pcsx2
@@ -64,6 +67,7 @@
     dust
     ripgrep
     fzf
+    pnpm
     ffmpeg_6-headless
     bitwarden
     bitwarden-cli
@@ -112,6 +116,25 @@
     iosevka
     sops
   ];
+
+  gtk = {
+    enable = true;
+
+    iconTheme = {
+      name = "Papirus-Dark";
+      package = pkgs.papirus-icon-theme;
+    };
+
+    theme = {
+      name = "Adwaita-dark";
+      package = pkgs.gnome-themes-extra;
+    };
+
+    gtk3.extraConfig.gtk-application-prefer-dark-theme = 1;
+    gtk4.extraConfig.gtk-application-prefer-dark-theme = 1;
+  };
+
+  services.gpg-agent.enable = true;
 
   services.ollama = {
     enable = true;

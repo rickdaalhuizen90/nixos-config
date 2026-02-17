@@ -15,13 +15,7 @@
     "2620:fe::fe" "2620:fe::9"
   ];
 
-  networking.hosts = {
-    "127.0.0.1" = [ "magento.app.test" "n8n.app.test" "odoo.app.test" "akeneo.app.test" ];
-    "192.168.1.30" = [ "headscale.skynet.home" ];
-  };
-
   networking.nftables.enable = true;
-
   services.tailscale.enable = true;
   networking.firewall = {
     enable = true;
@@ -37,16 +31,14 @@
 
   # Security
   security.rtkit.enable = true;
+  #security.pki.certificates = [ (builtins.readFile ./certificates/homeserver-root-ca.crt) ];
 
-  security.pki.certificates = [ (builtins.readFile ./certificates/homeserver-root-ca.crt) ];
-
-  # Desktop
-  services.xserver = {
+  programs.sway = {
     enable = true;
-    desktopManager.gnome.enable = true;
-    displayManager.gdm.enable = true;
+    wrapperFeatures.gtk = true;
   };
 
+  services.gnome.gnome-keyring.enable = true;
   services.fwupd.enable = true;
 
   # Bluetooth
@@ -54,6 +46,8 @@
     enable = true;
     settings.General.ControllerMode = "bredr";
   };
+
+  services.blueman.enable = true;
 
   boot.extraModprobeConfig = ''
     options rtw89_pci disable_aspm=y
@@ -67,6 +61,14 @@
     enable = true;
     pulse.enable = true;
   };
+
+  # Brightness
+  programs.light.enable = true;
+
+  # File Manager
+  programs.thunar.enable = true;
+  services.gvfs.enable = true;
+  services.tumbler.enable = true;
 
   # Power Management
   services.power-profiles-daemon.enable = false;
@@ -84,7 +86,7 @@
 
   # Suspend/Hibernate
   services.logind = {
-    lidSwitch = "suspend";
+    lidSwitch = "suspend-then-hibernate";
     lidSwitchExternalPower = "suspend";
     extraConfig = ''
       HandlePowerKey=suspend
@@ -92,6 +94,13 @@
       IdleActionSec=5min
     '';
   };
+
+  services.xserver.displayManager.gdm = {
+    enable = true;
+    wayland = true;
+  };
+
+  services.displayManager.defaultSession = "sway";
 
   virtualisation = {
     containers.enable = true;
@@ -125,13 +134,21 @@
   nix.gc = {
     automatic = true;
     dates = "weekly";
-    options = "--delete-older-than 7d";
+    options = "--delete-older-than 14d";
+    persistent = true;
   };
 
   programs = {
     firefox.enable = true;
     zsh.enable = true;
     steam.enable = true;
+  };
+
+  xdg.portal = {
+    enable = true;
+    wlr.enable = true;
+    extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+    config.common.default = "*";
   };
 
   environment.systemPackages = with pkgs; [
@@ -141,21 +158,28 @@
     vlc unzip zstd sshfs
     usbutils pciutils
     dive podman-tui podman-compose
-    iptables-nftables-compat
+    iptables-nftables-compat gnome-disk-utility ncdu du-dust
+    grim wl-clipboard mako brightnessctl wireplumber wev
+    i3status rofi papirus-icon-theme nwg-displays libnotify
   ];
 
+  services.udev.packages = [ pkgs.brightnessctl ];
   users.users.${username} = {
     isNormalUser = true;
     description = "Rick Daalhuizen";
-    extraGroups = [ "networkmanager" "wheel" "docker" "podman" "video" "render" ];
+    extraGroups = [ "networkmanager" "wheel" "docker" "podman" "video" "render" "input" ];
     shell = pkgs.zsh;
   };
+
+  services.udisks2.enable = true;
+  security.polkit.enable = true;
 
   # Redroid Specifics
   boot.kernelParams = [
     "thinkpad_acpi.bios_charge_start_threshold=75"
     "thinkpad_acpi.bios_charge_stop_threshold=80"
     "acpi.ec_no_wakeup=1"
+    "amd_pstate=active"
   ];
 
   boot.kernelPatches = [ {
